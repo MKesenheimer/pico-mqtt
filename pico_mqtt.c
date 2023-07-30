@@ -114,8 +114,10 @@ err_t mqtt_publish_value(MQTT_CLIENT_T *state, const char *topic, const char *va
     u8_t qos = 2; /* 0 1 or 2, see MQTT specification */
     u8_t retain = 0;
 
+    // disable interrupts
     cyw43_arch_lwip_begin();
     err = mqtt_publish(state->mqtt_client, topic, value, strlen(value), qos, retain, mqtt_pub_request_cb, state);
+    // enable interrupts again
     cyw43_arch_lwip_end();
     if(err != ERR_OK) {
       DEBUG_printf("Publish err: %d\n", err);
@@ -229,7 +231,6 @@ void mqtt_connect_and_wait(MQTT_CLIENT_T *state) {
             sleep_ms(1);
             if (!notReady--) {
                 if (mqtt_client_is_connected(state->mqtt_client)) {
-                    state->receiving = 1;
                     DEBUG_printf("Ready to publish...\n");
                     break;
                 } else {
