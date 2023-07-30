@@ -60,7 +60,7 @@ static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection
 
 void mqtt_pub_request_cb(void *arg, err_t err) {
     MQTT_CLIENT_T *state = (MQTT_CLIENT_T *)arg;
-    printf("MQTT sent message with code: %d\n", err);
+    DEBUG_printf("MQTT message sent with code: %d\n", err);
     state->receiving = 0;
     state->received++;
 }
