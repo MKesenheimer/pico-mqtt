@@ -111,7 +111,7 @@ err_t mqtt_publish_prepare(MQTT_CLIENT_T *state) {
 
 err_t mqtt_publish_value(MQTT_CLIENT_T *state, const char *topic, const char *value) {
     err_t err = ERR_OK;
-    u8_t qos = 2; /* 0 1 or 2, see MQTT specification */
+    u8_t qos = 2; /* 0, 1 or 2, see MQTT specification */
     u8_t retain = 0;
 
     // disable interrupts
@@ -132,6 +132,7 @@ err_t mqtt_connect(MQTT_CLIENT_T *state) {
 
     memset(&ci, 0, sizeof(ci));
 
+    // TODO: Define these settings globally!
     ci.client_id = CLIENT_ID;
     ci.client_user = CLIENT_USER;
     ci.client_pass = CLIENT_PASS;
@@ -139,7 +140,7 @@ err_t mqtt_connect(MQTT_CLIENT_T *state) {
     ci.will_topic = NULL;
     ci.will_msg = NULL;
     ci.will_retain = 0;
-    ci.will_qos = 0;
+    ci.will_qos = 2; /* 0, 1 or 2, see MQTT specification */
 
 #if MQTT_TLS
     struct altcp_tls_config *tls_config;
@@ -223,9 +224,6 @@ void mqtt_connect_and_wait(MQTT_CLIENT_T *state) {
 
     if (mqtt_connect(state) == ERR_OK) {
         DEBUG_printf("Client connected to mqtt server.\n");
-    }
-
-    if (mqtt_connect(state) == ERR_OK) {
         while (true) {
             cyw43_arch_poll();
             sleep_ms(1);
