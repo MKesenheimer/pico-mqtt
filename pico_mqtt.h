@@ -13,7 +13,9 @@
 #include "lwip/dns.h"
 
 #include "lwip/altcp_tcp.h"
+#if MQTT_TLS
 #include "lwip/altcp_tls.h"
+#endif
 #include "lwip/apps/mqtt.h"
 
 #include "lwip/apps/mqtt_priv.h"

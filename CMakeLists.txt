@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(PICO_BOARD pico_w)
 set(PICO_SDK_FETCH_FROM_GIT on)
 include(pico_sdk_import.cmake)
 
@@ -11,8 +12,6 @@ project(mqtt-test
 
 # set(CMAKE_C_STANDARD 11)
 # set(CMAKE_CXX_STANDARD 19)
-
-set(PICO_BOARD pico_w)
 
 if (PICO_SDK_VERSION_STRING VERSION_LESS "1.3.0")
     message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
@@ -45,11 +44,12 @@ target_include_directories(${CMAKE_PROJECT_NAME}
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-  pico_cyw43_arch_lwip_poll
   pico_stdlib
+  hardware_i2c
+  pico_cyw43_arch_lwip_poll
   pico_lwip_mbedtls
-  pico_mbedtls
   pico_lwip_mqtt
+  pico_mbedtls
 )
 
 pico_add_extra_outputs(${CMAKE_PROJECT_NAME})

@@ -1,5 +1,4 @@
-#ifndef _LWIPOPTS_H
-#define _LWIPOPTS_H
+#pragma once
 
 //
 #define MEMP_NUM_SYS_TIMEOUT            (LWIP_NUM_SYS_TIMEOUT_INTERNAL + 8)
@@ -95,7 +94,3 @@
 #define LWIP_ALTCP               1
 #define LWIP_ALTCP_TLS           1
 #define LWIP_ALTCP_TLS_MBEDTLS   1
-
-
-
-#endif
