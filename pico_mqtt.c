@@ -89,9 +89,10 @@ err_t mqtt_test_publish(MQTT_CLIENT_T *state) {
   return err;
 }
 
-err_t mqtt_publish_prepare(MQTT_CLIENT_T *state) {
+err_t mqtt_publish_prepare(MQTT_CLIENT_T *state, u32_t timeout_s) {
     err_t err = ERR_OK;
     u32_t notReady = 5000;
+    u32_t timeout = 0;
     while (true) {
         cyw43_arch_poll();
         sleep_ms(1);
@@ -103,6 +104,11 @@ err_t mqtt_publish_prepare(MQTT_CLIENT_T *state) {
                 printf(".");
             }
             notReady = 5000;
+            timeout += 5;
+            if (timeout > timeout_s) {
+                printf("Timeout...\n");
+                return ERR_ARG;
+            }
         }
     }
 
@@ -178,64 +184,36 @@ err_t mqtt_connect(MQTT_CLIENT_T *state) {
     return err;
 }
 
-void mqtt_run_test(MQTT_CLIENT_T *state) {
+err_t mqtt_connect_and_wait(MQTT_CLIENT_T *state, u32_t timeout_s) {
     state->mqtt_client = mqtt_client_new();
-
-    u32_t notReady = 5000;
 
     if (state->mqtt_client == NULL) {
         DEBUG_printf("Failed to create new mqtt client\n");
-        return;
-    }
-
-    if (mqtt_connect(state) == ERR_OK) {
-        while (true) {
-            cyw43_arch_poll();
-            sleep_ms(1);
-            if (!notReady--) {
-                if (mqtt_client_is_connected(state->mqtt_client)) {
-                    state->receiving = 1;
-                    if (mqtt_test_publish(state) == ERR_OK) {
-                        DEBUG_printf("published message\n");
-                    } // else ringbuffer is full and we need to wait for messages to flush.
-                } else {
-                    DEBUG_printf(".");
-                }
-
-                // MEM_STATS_DISPLAY();
-                // MEMP_STATS_DISPLAY(0);
-                // MEMP_STATS_DISPLAY(1);
-
-                notReady = 5000;
-            }
-        }
-    }
-}
-
-void mqtt_connect_and_wait(MQTT_CLIENT_T *state) {
-    state->mqtt_client = mqtt_client_new();
-
-    u32_t notReady = 5000;
-
-    if (state->mqtt_client == NULL) {
-        DEBUG_printf("Failed to create new mqtt client\n");
-        return;
+        return ERR_ARG;
     }
 
     if (mqtt_connect(state) == ERR_OK) {
         DEBUG_printf("Client connected to mqtt server.\n");
+        u32_t timeout = 0;
+        u32_t notReady = 5000;
         while (true) {
             cyw43_arch_poll();
             sleep_ms(1);
             if (!notReady--) {
                 if (mqtt_client_is_connected(state->mqtt_client)) {
                     DEBUG_printf("Ready to publish...\n");
-                    break;
+                    return ERR_OK;
                 } else {
                     DEBUG_printf(".");
                 }
                 notReady = 5000;
+                timeout += 5;
+                if (timeout > timeout_s) {
+                    DEBUG_printf("Timeout...\n");
+                    return ERR_ARG;
+                }
             }
         }
     }
+    return ERR_OK;
 }

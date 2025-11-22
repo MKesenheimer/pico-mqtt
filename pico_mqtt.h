@@ -61,11 +61,9 @@ void mqtt_pub_request_cb(void *arg, err_t err);
 
 err_t mqtt_test_publish(MQTT_CLIENT_T *state);
 
-err_t mqtt_publish_prepare(MQTT_CLIENT_T *state);
+err_t mqtt_publish_prepare(MQTT_CLIENT_T *state, u32_t timeout_s);
 err_t mqtt_publish_value(MQTT_CLIENT_T *state, const char *topic, const char *value);
 
 err_t mqtt_connect(MQTT_CLIENT_T *state);
 
-void mqtt_run_test(MQTT_CLIENT_T *state);
-
-void mqtt_connect_and_wait(MQTT_CLIENT_T *state);
+err_t mqtt_connect_and_wait(MQTT_CLIENT_T *state, u32_t timeout_s);

@@ -41,6 +41,7 @@
 #define PSK "your-psk"
 
 // secrets for mqtt server access
-#define CLIENT_ID "the-name-of-this-device"
 #define CLIENT_USER "username-for-authentication"
 #define CLIENT_PASS "password-for-authentication"
+#define MQTT_TOPIC_BASE "/home/office/"
+#define CLIENT_ID "pico-office3"
